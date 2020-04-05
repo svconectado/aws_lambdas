@@ -1,5 +1,6 @@
 # Auto-Evaluación COVID-19 con AWS Lambdas
-Para obtener una evaluación envíe un objeto JSON como cuerpo de una petición POST al siguiente API `https://api.quenecesito.org/testing/assessments`.
+Para obtener una evaluación envíe un objeto JSON como cuerpo de una petición POST al siguiente API endpoint `https://api.quenecesito.org/testing/assessments`. Consulta
+de datos almacenados aún no está disponible.
 
 El formato del objeto es el siguiente:
 ```json
@@ -23,7 +24,7 @@ Si desea geolocalizar guarde los atributos "lat" y "lon" dentro del objeto JSON.
 **Nota**: Puede incluir uno o varios atributos. Atributos adicionales son guardados en el DynamoDB en el backend. El algoritmo de evaluación buscará los índices y realizará el
 cálculo del score correspondiente en función de la siguiente tabla:
 ```python
-symtom_weights = {
+symptom_weights = {
     "tos": 1,
     "escalofrio": 1,
     "diarrea": 1,
@@ -52,14 +53,15 @@ El método devolverá una respuesta de la forma:
     }
 }
 ```
-
-Donde **risk_score** es la sumatoria de puntos de la evaluación enviada y **risk_level** es el nivel de riesgo según
-la siguiente tabla:
-
-- 0: Podría ser estrés, toma precauciones y observa.
-- 1: Hidrátate, conserva medidas de higiene y reevalua en 2 días.
-- 2: Acude a consulta con el médico.
-- 3: Llama a 132 para realizar la detección del virus.
+Atributos en la respuesta:
+- **hash_id**: hash aplicado sobre la data enviada y el timestamp. Guardelo localmente para extraer el registro de la base de datos.
+- **timestamp**: Es un timestamp en formato ISO del momento en que se ejecutó la función lambda.
+- **risk_score**: Es la sumatoria de puntos de la evaluación enviada.
+- **risk_level**: es el nivel de riesgo según la siguiente tabla:
+    - 0: Podría ser estrés, toma precauciones y observa.
+    - 1: Hidrátate, conserva medidas de higiene y reevalua en 2 días.
+    - 2: Acude a consulta con el médico.
+    - 3: Llama a 132 para realizar la detección del virus.
 
 
 ## Ejemplo de aplicación con CURL
